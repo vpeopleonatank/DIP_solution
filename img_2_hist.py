@@ -32,20 +32,35 @@ def get_hist(img):
     return h
 
 
+def count_diff(a1, a2):
+    c = 0
+    for i in range(len(a1)):
+        if a1[i] != a2[i]:
+            c += 1
+
+    return c
+
+
+def count_pixels_inrange(img, lo, up):
+    return np.sum((img > lo) & (img <= up))  # 31 63.75
+
+
 if __name__ == "__main__":
 
     img = cv2.imread("./lena.png", cv2.IMREAD_GRAYSCALE)
-# cv2.imshow("", img)
-# cv2.waitKey(0)
+    # cv2.imshow("", img)
+    # cv2.waitKey(0)
 
     b = [j for j in range(1, 9)]
-    hist = get_hist(img)
-    hist = np.ravel(img)
-    print(hist.shape)
-    fig = plt.figure()
-    plt.hist(hist, bins=8)
-    plt.xlabel('bin')
-    plt.ylabel('number of pixels')
+    own_hist = get_hist(img)
+    cv2_hist = cv2.calcHist([img], [0], None, [M], [0, M])
+    # fig = plt.figure()
+    # n, bins, _ = plt.hist(np.ravel(img), bins=M)  # not correct
+    # plt.hist(cv2_hist, BINS, [0, BINS])
+    # plt.plot(cv2_hist, color="r")
+    # plt.plot(own_hist, color="b")
+    # plt.xlabel("bin")
+    # plt.ylabel("number of pixels")
     plt.show()
 
 
