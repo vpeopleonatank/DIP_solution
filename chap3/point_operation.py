@@ -44,20 +44,45 @@ def powerlaw_ops(img, gamma=0.04):
     return b_img
 
 
-def contrast_stretching(img, r1, s1, r2, s2):
-    b_img = np.zeros((img.shape[0], img.shape[1]), dtype='uint8')
+def scaling_ops(img, r1, s1, r2, s2):
+    b_img = np.zeros((img.shape[0], img.shape[1]), dtype="uint8")
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            x = img[i, j]
-            if x < r1:
-                b_img[i, j] = s1
-            elif r1 <= x and x < r2:
-                b_img[i, j] = s2 * ((img[i, j] - r1) / (r2 - r1))
-            else:
-                b_img[i, j] = s2
+            b_img[i, j] = s2 * ((img[i, j] - r1) / (r2 - r1))
 
     return b_img
 
+
+def piece_wise_linear_ops(img, s1, s2, r1, r2):
+    b_img = np.zeros((img.shape[0], img.shape[1]), dtype="uint8")
+    k1 = s1 / r1
+    k2 = (s2 - s1) / (r2 - r1)
+    k3 = (L - 1 - s2) / (L - 1 - r2)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            x = img[i, j]
+            if x >= 0 and x < r1:
+                b_img[i, j] = k1 * x
+            elif x >= r1 and x < r2:
+                b_img[i, j] = (x - r1) * k2 + s1
+            elif x >= r2 and x <= (L - 1):
+                b_img[i, j] = (x - r2) * k3 + s2
+
+    return b_img
+
+
+
+def thresholding(img, tau, value):
+    b_img = np.zeros((img.shape[0], img.shape[1]), dtype="uint8")
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            x = img[i, j]
+            if x >= tau:
+                b_img[i, j] = value
+            else:
+                b_img[i, j] = 0
+
+    return b_img
 
 def plot_2_img(img1, img2, title=None):
     fig = plt.figure(num=title)
@@ -99,7 +124,14 @@ if __name__ == "__main__":
     da_img = cv2.imread("./img/Fig0320(4)(bottom_left).tif", 0)
     mi = np.min(da_img)
     ma = np.max(da_img)
-    stretched_da_img = contrast_stretching(da_img, r1=mi, s1=0, r2=ma, s2=L - 1)
-    plot_2_hist(da_img, stretched_da_img)
-    plot_2_img(da_img, stretched_da_img)
-    # plot_2_img(da_img, da_img)
+    # stretched_da_img = scaling_ops(da_img, r1=mi, s1=0, r2=ma, s2=L - 1)
+    # plot_2_hist(da_img, stretched_da_img)
+    # plot_2_img(da_img, stretched_da_img)
+    # linear_da_img = piece_wise_linear_ops(da_img, s1=0, s2=L-1, r1=da_img.min(), r2=da_img.max())
+    # plot_2_hist(da_img, linear_da_img)
+    # plot_2_img(da_img, linear_da_img)
+
+
+    threshold_da_img = thresholding(da_img, tau=38, value=L-1)
+    plot_2_hist(da_img, threshold_da_img)
+    plot_2_img(da_img, threshold_da_img)
