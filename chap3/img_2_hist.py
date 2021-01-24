@@ -3,16 +3,16 @@ import cv2
 import matplotlib.pyplot as plt
 
 
-M = 8  # nums of bin
+M = 256  # nums of bin
 L = 256
 
 DELTA = (L - 1) / M
 
 
-def get_pixel_bin(v):
-    for i in range(M):
+def get_pixel_bin(v, BINS=M):
+    for i in range(BINS):
         lower_d = DELTA * i
-        if i != M:
+        if i != BINS:
             upper_d = DELTA * (i + 1)
         else:
             upper_d = DELTA * (i + 1) + 1
@@ -22,12 +22,13 @@ def get_pixel_bin(v):
     return -1
 
 
-def get_hist(img):
+def get_hist(img, M=M):
     h = [0] * M
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            if get_pixel_bin(img[i, j]) != -1:
-                h[get_pixel_bin(img[i, j])] += 1
+            bin_th = get_pixel_bin(img[i, j], BINS=M)
+            if bin_th != -1:
+                h[bin_th] += 1
 
     return h
 
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     # n, bins, _ = plt.hist(np.ravel(img), bins=M)  # not correct
     # plt.hist(cv2_hist, BINS, [0, BINS])
     # plt.plot(cv2_hist, color="r")
-    # plt.plot(own_hist, color="b")
+    plt.plot(own_hist, color="b")
     # plt.xlabel("bin")
     # plt.ylabel("number of pixels")
     plt.show()
