@@ -9,12 +9,79 @@ L = 256
 M = 256
 
 
-def get_matching_hist_img(org, specified):
-    org_h = get_hist(org, M=M)
-    specified_h = get_hist(specified, M=M)
+def get_matching_hist_img(img, org_c, specified_c):
     tfs = []
-    for i in range(org_h):
-        pass
+    matched_img = np.zeros((img.shape[0], img.shape[1]), dtype="uint8")
+    mapping_table = []
+    for i in org_c:
+        for s in range(len(specified_c)):
+            if i <= specified_c[s]:
+                mapping_table.append(s)
+                break
+
+    import ipdb; ipdb.set_trace()
+    for i in range(org.shape[0]):
+        for j in range(org.shape[1]):
+            matched_img[i, j] = mapping_table[img[i, j]]
+
+    return matched_img
+
+
+def display_multi_img(imgs):
+    w = 10
+    h = 10
+    fig = plt.figure(figsize=(8, 8))
+    columns = len(imgs)
+    rows = 1
+    for i in range(1, columns * rows + 1):
+        fig.add_subplot(rows, columns, i)
+        plt.imshow(imgs[i - 1], cmap="gray")
+    plt.show()
+
+
+def find_nearest_above(my_array, target):
+    diff = my_array - target
+    mask = np.ma.less_equal(diff, -1)
+    # We need to mask the negative differences
+    # since we are looking for values above
+    if np.all(mask):
+        c = np.abs(diff).argmin()
+        return c  # returns min index of the nearest if target is greater than any value
+    masked_diff = np.ma.masked_array(diff, mask)
+    return masked_diff.argmin()
+
+
+def hist_match(original, specified):
+
+    oldshape = original.shape
+    original = original.ravel()
+    specified = specified.ravel()
+
+    # get the set of unique pixel values and their corresponding indices and counts
+    s_values, bin_idx, s_counts = np.unique(
+        original, return_inverse=True, return_counts=True
+    )
+    t_values, t_counts = np.unique(specified, return_counts=True)
+
+    # Calculate s_k for original image
+    s_quantiles = np.cumsum(s_counts).astype(np.float64)
+    s_quantiles /= s_quantiles[-1]
+
+    # Calculate s_k for specified image
+    t_quantiles = np.cumsum(t_counts).astype(np.float64)
+    t_quantiles /= t_quantiles[-1]
+
+    # Round the values
+    sour = np.around(s_quantiles * 255)
+    temp = np.around(t_quantiles * 255)
+
+    # Map the rounded values
+    b = []
+    for data in sour[:]:
+        b.append(find_nearest_above(temp, data))
+    b = np.array(b, dtype="uint8")
+
+    return b[bin_idx].reshape(oldshape)
 
 
 if __name__ == "__main__":
@@ -27,8 +94,11 @@ if __name__ == "__main__":
     specified_p = get_pdf(specified_h, specified.shape[0] * specified.shape[1])
     org_c = get_cumulative_hist(org_p)
     specified_c = get_cumulative_hist(specified_p) * (L - 1)
-    org_c = [int(o * (L - 1)) for o in org_c]
-
+    org_c = [round(o * (L - 1)) for o in org_c]
+    specified_c = [round(o * (L - 1)) for o in specified_c]
+    matched_img = get_matching_hist_img(org, org_c, specified_c)
     # plot_2_hist(org, specified)
-    # cv2.imshow('', specified)
+    a = hist_match(org, specified)
+    display_multi_img([org, specified, matched_img, a])
+    # cv2.imshow("", matched_img)
     # cv2.waitKey(0)
