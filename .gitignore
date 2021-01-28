@@ -1,7 +1,4 @@
 .git/
-*.png
-*.tiff
-*.tif
 .vim/
 
 chap3/__pycache__/
