@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from img_2_hist import get_hist
 from hist_equalize import get_cumulative_hist, get_pdf
 from point_operation import plot_2_hist, plot_2_img
+from utils import display_multi_img
 
 L = 256
 M = 256
@@ -19,24 +20,11 @@ def get_matching_hist_img(img, org_c, specified_c):
                 mapping_table.append(s)
                 break
 
-    import ipdb; ipdb.set_trace()
     for i in range(org.shape[0]):
         for j in range(org.shape[1]):
             matched_img[i, j] = mapping_table[img[i, j]]
 
     return matched_img
-
-
-def display_multi_img(imgs):
-    w = 10
-    h = 10
-    fig = plt.figure(figsize=(8, 8))
-    columns = len(imgs)
-    rows = 1
-    for i in range(1, columns * rows + 1):
-        fig.add_subplot(rows, columns, i)
-        plt.imshow(imgs[i - 1], cmap="gray")
-    plt.show()
 
 
 def find_nearest_above(my_array, target):
