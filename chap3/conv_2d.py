@@ -30,10 +30,13 @@ if __name__ == "__main__":
     KERNEL_1 = np.array(
         [[1 / 9, 1 / 9, 1 / 9], [1 / 9, 1 / 9, 1 / 9], [1 / 9, 1 / 9, 1 / 9]]
     )
-    img_smooth = conv_2d(img, KERNEL_1)
-    display_multi_img(
+    KERNEL_SHARPENING1 = np.array(
         [
-            img,
-            img_smooth
+            [-1 / 9, -1 / 9, -1 / 9],
+            [-1 / 9, 8 / 9, -1 / 9],
+            [-1 / 9, -1 / 9, -1 / 9],
         ]
     )
+    img_smooth = conv_2d(img, KERNEL_1)
+    img_sharpen1 = conv_2d(img, KERNEL_SHARPENING1)
+    display_multi_img([img, img_smooth, img_sharpen1])
