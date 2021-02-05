@@ -20,6 +20,7 @@ def get_matching_hist_img(img, org_c, specified_c):
                 mapping_table.append(s)
                 break
 
+    import ipdb; ipdb.set_trace()
     for i in range(org.shape[0]):
         for j in range(org.shape[1]):
             matched_img[i, j] = mapping_table[img[i, j]]
@@ -80,8 +81,9 @@ if __name__ == "__main__":
 
     org_p = get_pdf(org_h, org.shape[0] * org.shape[1])
     specified_p = get_pdf(specified_h, specified.shape[0] * specified.shape[1])
+    # import ipdb; ipdb.set_trace()
     org_c = get_cumulative_hist(org_p)
-    specified_c = get_cumulative_hist(specified_p) * (L - 1)
+    specified_c = get_cumulative_hist(specified_p)
     org_c = [round(o * (L - 1)) for o in org_c]
     specified_c = [round(o * (L - 1)) for o in specified_c]
     matched_img = get_matching_hist_img(org, org_c, specified_c)

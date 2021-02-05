@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from img_2_hist import get_hist
 from point_operation import plot_2_hist, plot_2_img
 
-L = 256
-M = 256
+L = 256  # Do sang 2^8
+M = 256  # So Bin
 
 
 def get_pdf(hist, N):
@@ -38,8 +38,10 @@ if __name__ == "__main__":
     img = cv2.imread("./lena.png", cv2.IMREAD_GRAYSCALE)
     cv_eq_img = cv2.equalizeHist(img)
     equaled_img = hist_equalize(img)
-    # plot_2_img(img, equaled_img)
-    plot_2_hist(cv_eq_img, equaled_img)
+    plot_2_img(img, equaled_img, title="Ảnh gốc và ảnh cân bằng histogram")
+    plot_2_hist(cv_eq_img, equaled_img, title="Equalized Hist của hàm builtin và cài đặt")
+    plot_2_hist(img, equaled_img, title="Equalized Hist của ảnh gốc và cài đặt")
+    # plot_2_hist()
 
     # plt.plot(own_hist, color="b")
     plt.show()

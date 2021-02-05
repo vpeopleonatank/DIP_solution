@@ -1,4 +1,5 @@
 .git/
 .vim/
+.idea/
 
 chap3/__pycache__/
