@@ -109,7 +109,7 @@ def cvt_color(img, cvt_code):
                 if ma == mi:
                     H = 0
                 elif ma == R:
-                    H = 60 * (G - B) * delta
+                    H = 60 * (G - B) / delta
                 elif ma == G:
                     H = 60 * (2 + (B - R) / delta)
                 else:
